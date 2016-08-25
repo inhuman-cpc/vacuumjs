@@ -1,22 +1,23 @@
 {
   "name": "vacuumjs",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A node.js web page content extractor",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "cd test && node index.js"
   },
   "keywords": [
+    "content-extraction",
     "extraction",
-    "markdown",
+    "ce",
     "html"
   ],
   "author": "simongfxu",
   "license": "MIT",
   "dependencies": {
+    "bluebird": "^3.4.2",
     "parse5": "^2.2.0",
     "superagent": "^2.1.0",
-    "superagent-proxy": "^1.0.1",
-    "to-markdown": "^3.0.1"
+    "superagent-proxy": "^1.0.1"
   }
 }
