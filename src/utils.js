@@ -109,11 +109,6 @@ function isDiffrentNode(target, old) {
     return target.value !== old.value
   }
 
-  if (target.childNodes) {
-    var oldLen = oldLen.childNodes && old.childNodes.length
-    if (target.childNodes.length !== oldLen) return true
-  }
-
   // 属性不完全一致
   if (hasDifferentAttr(target, old)) {
     return true

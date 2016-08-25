@@ -13,7 +13,7 @@ var urlList = [
 var proxy = 'socks://127.0.0.1:1080'
 var parse5 = require('parse5')
 
-var vacuumjs = require('../src/layout_similarity')
+var vacuumjs = require('../src/index')
 vacuumjs.parse(urlList, {
   proxy: proxy,
   referenceUrl: 'https://developers.google.com/web/fundamentals/performance/critical-rendering-path/?hl=zh-cn'

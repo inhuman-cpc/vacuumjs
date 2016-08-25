@@ -46,13 +46,18 @@ module.exports = function extact(targetNode, baseNode) {
   diff(targetNode, baseNode)
 
   diffNodes.forEach(item => {
+    // TODO FIX 按照文本密度排序
     item.__length = utils.getNodeText(item).length
   })
 
   diffNodes.sort((a, b) => {
     return b.__length - a.__length
   })
-
+  var print = function(el) {
+    console.log(el.tagName, el.attrs.length ? el.attrs[0].value : '')
+  }
+  print(diffNodes[0])
+  print(diffNodes[1])
   if (diffNodes.length > 1) {
     return utils.getLowestCommonAncestor(diffNodes[0], diffNodes[1])
   } else if (diffNodes.length === 1) {
