@@ -6,6 +6,7 @@
  */
 
 var utils = require('./utils')
+var filter = require('./filter')
 
 module.exports = function extact(targetNode, baseNode) {
   var diffNodes = []
@@ -45,19 +46,24 @@ module.exports = function extact(targetNode, baseNode) {
 
   diff(targetNode, baseNode)
 
-  diffNodes.forEach(item => {
-    // TODO FIX 按照文本密度排序
-    item.__length = utils.getNodeText(item).length
+  diffNodes = diffNodes.filter(el => {
+    var details = utils.getNodeDetails(el)
+    el.__details = details
+    return filter(details)
+  }).sort((a, b) => {
+    return b.__details.textCount - a.__details.textCount
   })
 
-  diffNodes.sort((a, b) => {
-    return b.__length - a.__length
-  })
-  var print = function(el) {
-    console.log(el.tagName, el.attrs.length ? el.attrs[0].value : '')
-  }
-  print(diffNodes[0])
-  print(diffNodes[1])
+  // diffNodes.forEach(el => {
+  //   console.log(`
+  //     ${el.tagName} ${el.attrs.length ? el.attrs[0].value : ''}
+  //     总文本数：${el.__details.textCount}
+  //     链接文本/总文本：${el.__details.linkTextCount/el.__details.textCount}
+  //     链接文本节点/总文本节点：${el.__details.linkTagCount/el.__details.textNodeCount}
+  //     ${utils.getNodeText(el)}
+  //   `)
+  // })
+
   if (diffNodes.length > 1) {
     return utils.getLowestCommonAncestor(diffNodes[0], diffNodes[1])
   } else if (diffNodes.length === 1) {

@@ -12,6 +12,7 @@ var Promise = require('bluebird')
 var parse5 = require('parse5')
 var extract = require('./extract')
 var request = require('./http')
+var filter = require('./filter')
 
 function parse(urls, opts) {
   urls = urls.concat(opts.referenceUrl)

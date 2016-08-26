@@ -1,3 +1,5 @@
+var traverse = require('./traverse')
+
 /**
  * 如下标签与网页正文内容关联很小
  * 对比节点差异时直接忽略
@@ -8,6 +10,18 @@ var excludeTags = 'svg,style,link,meta,iframe,noscript,footer,header'.split(',')
  * 如下内联元素可能作为网页正文的修饰标签出现
  */
 var inlineTags = 'b,big,i,small,tt,abbr,acronym,cite,code,dfn,em,kbd,strong,samp,time,var,a,bdo,br,img,map,object,q,span,sub,sup,button,input,label,select,textarea'.split(',')
+
+function getTextLength(txt) {
+  return txt.replace(/\s/g, '').length
+}
+
+function isEmptyText(txt) {
+  return !txt || /^\s+$/.test(txt)
+}
+
+function getBaseLog(x, y) {
+    return Math.log(y) / Math.log(x)
+}
 
 /**
  * 是否为文本节点
@@ -48,10 +62,9 @@ function getNodeText(node) {
  */
 function getNodePathList(node) {
   var parents = [node]
-  var parent = node.parentNode
-  while (parent) {
+  var parent = node
+  while (parent = parent.parentNode) {
     parents.unshift(parent)
-    parent = parent.parentNode
   }
 
   return parents
@@ -149,14 +162,91 @@ function traverseNode(node, list, filter, map) {
   if (!node || isCommnetNode(node) || !node.childNodes) return
 
   node.childNodes.forEach(el => {
-    if (filter(el)) {
+    if (!filter || filter(el)) {
       list.push(map ? map(el) : el)
     } else {
-      traverseNode(el, list, filter)
+      traverseNode(el, list, filter, map)
     }
   })
 }
 
+function getNodeDetails(node) {
+  // 文本总数
+  var textCount = 0
+  // 链接文本总数
+  var linkTextCount = 0
+  var textNodeCount = 0
+  var linkTagCount = 0
+  var imgTagCount = 0
+  var paragraphTagCount = 0
+  var tagCount = 0
+  // 节点全部标签种类
+  var childTagSet = new Set()
+  // 深度优先遍历子节点，排除非内容节点
+  var nodes = traverse.dfs(node, (el) => {
+    // pre标签内部多为代码，容易造成干扰，忽略（虽说一般也只有正文才会用）
+    // NOTE 是否还有其它标签和pre类似
+    return excludeTags.indexOf(el.parentNode.tagName) === -1 && el.tagName !== 'pre'
+  })
+
+  var currentNode
+  while(currentNode = nodes.pop()) {
+    if (currentNode.tagName) {
+      childTagSet.add(currentNode.tagName)
+
+      tagCount += 1
+    }
+
+    if (currentNode.nodeName === '#text') {
+      if (isEmptyText(currentNode.value)) {
+        continue
+      }
+
+      textNodeCount += 1
+      var txtLength = getTextLength(currentNode.value)
+      textCount += txtLength
+
+      if (currentNode.parentNode.tagName === 'a') {
+        linkTextCount += txtLength
+      } else {
+        var parents = getNodePathList(currentNode)
+        parents.pop()
+        var isParentLink = parents.some(el => {
+          return el.tagName === 'a'
+        })
+        if (isParentLink) {
+          linkTextCount += txtLength
+        }
+      }
+    }
+
+    if (currentNode.tagName === 'img') {
+      imgTagCount += 1
+    }
+
+    if (currentNode.tagName === 'a') {
+      linkTagCount += 1
+    }
+
+    if (currentNode.tagName === 'p') {
+      paragraphTagCount += 1
+    }
+  }
+
+  return {
+    textCount: textCount,
+    textNodeCount: textNodeCount,
+    linkTextCount: linkTextCount,
+    linkTagCount: linkTagCount,
+    imgTagCount: imgTagCount,
+    tagCount: tagCount,
+    tagTypeCount: childTagSet.size,
+    paragraphTagCount: paragraphTagCount
+  }
+}
+
+exports.inlineTags = inlineTags
+exports.excludeTags = excludeTags
 exports.isTextNode = isTextNode
 exports.isCommnetNode = isCommnetNode
 exports.getNodeText = getNodeText
@@ -167,3 +257,4 @@ exports.hasDifferentAttr = hasDifferentAttr
 exports.isDiffrentNode = isDiffrentNode
 exports.getLowestContainer = getLowestContainer
 exports.isInlineNode = isInlineNode
+exports.getNodeDetails = getNodeDetails
