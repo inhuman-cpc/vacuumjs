@@ -1,7 +1,7 @@
 {
   "name": "vacuumjs",
-  "version": "1.0.0",
-  "description": "A node.js web page content extractor",
+  "version": "1.0.1",
+  "description": "A low-level node.js web page content extractor based on `parse5`.",
   "main": "dist/extract.js",
   "scripts": {
     "test": "NODE_ENV=test nyc mocha",
@@ -13,6 +13,10 @@
     "content-extraction",
     "extraction",
     "ce"
+  ],
+  "files": [
+    "dist",
+    "lib"
   ],
   "author": "simongfxu",
   "license": "MIT",
