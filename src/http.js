@@ -1,7 +1,7 @@
 var request = require('superagent')
 require('superagent-proxy')(request)
 
-module.exports = function loadPageContent(url, opts) {
+module.exports = function loadPageContent(url, opts = {}) {
   return new Promise((resolve, reject) => {
     var req = request.get(url)
     if (opts.proxy) {
@@ -14,7 +14,7 @@ module.exports = function loadPageContent(url, opts) {
         return
       }
 
-      resolve(res.text)
+      resolve(res)
     })
   })
 }

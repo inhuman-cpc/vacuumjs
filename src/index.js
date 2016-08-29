@@ -23,8 +23,8 @@ function parse(urls, opts) {
       proxy: opts.proxy
     })
   }).then(list => {
-    var domList = list.map(text => {
-      return parse5.parse(text)
+    var domList = list.map(res => {
+      return parse5.parse(res.text)
     })
     var refDOM = domList.pop()
     var nodes = domList.map(dom => {
@@ -35,7 +35,7 @@ function parse(urls, opts) {
   })
 }
 
-function serialize(node) {
+function serialize(node, opts = {}) {
   if (!node) return ''
 
   return parse5.serialize(node, {
