@@ -2,22 +2,42 @@
   "name": "vacuumjs",
   "version": "1.0.0",
   "description": "A node.js web page content extractor",
-  "main": "src/index.js",
+  "main": "dist/extract.js",
   "scripts": {
-    "test": "cd test && node index.js"
+    "test": "NODE_ENV=test nyc mocha",
+    "cover": "NODE_ENV=test nyc report --reporter=text-lcov > coverage.lcov && codecov",
+    "build": "babel lib -d dist --presets es2015,stage-0",
+    "prepublish": "npm run build"
   },
   "keywords": [
     "content-extraction",
     "extraction",
-    "ce",
-    "html"
+    "ce"
   ],
   "author": "simongfxu",
   "license": "MIT",
   "dependencies": {
     "bluebird": "^3.4.2",
-    "parse5": "^2.2.0",
-    "superagent": "^2.1.0",
-    "superagent-proxy": "^1.0.1"
+    "parse5": "^2.2.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.14.0",
+    "babel-plugin-istanbul": "^2.0.0",
+    "babel-preset-es2015": "^6.14.0",
+    "babel-preset-stage-0": "^6.5.0",
+    "babel-register": "^6.14.0",
+    "chai": "^3.5.0",
+    "mocha": "^3.0.2",
+    "nyc": "^8.1.0"
+  },
+  "nyc": {
+    "include": [
+      "lib/*.js"
+    ],
+    "require": [
+      "babel-register"
+    ],
+    "sourceMap": false,
+    "instrument": false
   }
 }
